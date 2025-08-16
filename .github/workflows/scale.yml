@@ -1,0 +1,75 @@
+name: scale production
+
+on:
+  workflow_dispatch:
+    inputs:
+      scale:
+        description: 'Scale type (idle or event)'
+        required: false
+        default: 'idle'
+        type: choice
+        options:
+          - idle
+          - event
+
+  # Run on Monday at midnight to scale back to idle
+  schedule:
+    - cron: '0 0 * * 1'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  scale:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: azure login
+        uses: Azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+        with:
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Scale production
+        run: |
+          if [ "${{ github.event.inputs.scale }}" == "event" ]; then
+            echo "Scaling up production environment..."
+          else
+            echo "Scaling down production environment..."
+          fi
+
+      - name: set values (idle)
+        if: (github.event_name == 'workflow_dispatch' && github.event.inputs.scale == 'idle' ) || github.event_name == 'schedule'
+        run: |
+          echo "APP_SVC_PLAN_SKU=B1" >> $GITHUB_ENV
+          echo "DB_CAPACITY=10" >> $GITHUB_ENV
+
+      - name: set values (event)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.scale == 'event'
+        run: |
+          echo "APP_SVC_PLAN_SKU=P1v3" >> $GITHUB_ENV
+          echo "DB_CAPACITY=50" >> $GITHUB_ENV
+
+      - name: scale
+        uses: azure/cli@v2
+        if: env.APP_SVC_PLAN_SKU && env.DB_CAPACITY
+        with:
+          azcliversion: latest
+          inlineScript: |
+            # Set app service plan SKU
+            az appservice plan update \
+              --name ${{ secrets.APP_SERVICE_PLAN_NAME }} \
+              --resource-group ${{ secrets.RESOURCE_GROUP_NAME }} \
+              --sku ${{ env.APP_SVC_PLAN_SKU }}
+
+            # Set SQL Database SKU
+            az sql db update \
+              --name ${{ secrets.SQL_DATABASE_NAME }} \
+              --resource-group ${{ secrets.RESOURCE_GROUP_NAME }} \
+              --server ${{ secrets.SQL_SERVER_NAME }} \
+              --capacity ${{ env.DB_CAPACITY }}

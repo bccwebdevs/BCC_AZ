@@ -44,13 +44,6 @@ Environment name: `prod`
 - `SQL_DATABASE_NAME` — Name of the SQL database to update.
 - `SQL_SERVER_NAME` — Name of the SQL server that hosts the database.
 
-### Notes and usage
-
-- The workflow uses short-lived credentials via `Azure/login`. Ensure the service principal assigned to `AZURE_CLIENT_ID` has permissions to update App Service Plans and SQL databases in the target subscription and resource group.
-- The `DB_CAPACITY` values in the workflow are integers passed to `az sql db update --capacity`. Adjust these values to match supported SKUs/tiers for your SQL configuration.
-- The App Service Plan SKU values used in the workflow are examples (`B1` for idle, `P1v3` for event). Change them to match the SKUs available in your subscription and desired pricing tier.
-- The workflow contains simple conditional steps to set environment variables; you can extend it to perform additional checks or notify teams when scaling occurs.
-
 ### Example: trigger manually
 
 1. In GitHub, go to the Actions tab and select the `scale production` workflow.

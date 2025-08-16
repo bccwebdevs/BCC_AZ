@@ -6,7 +6,7 @@ on:
       scale:
         description: 'Scale type (idle or event)'
         required: true
-        default: 'idle'
+        default: idle
         type: choice
         options:
           - idle
@@ -17,7 +17,7 @@ on:
     - cron: '0 0 * * 1'
 
 permissions:
-  id-token: write
+  id-token: write # Required for Azure login using OIDC
 
 jobs:
   scale:
@@ -60,7 +60,7 @@ jobs:
               --resource-group ${{ secrets.RESOURCE_GROUP_NAME }} \
               --sku ${{ env.APP_SVC_PLAN_SKU }}
 
-            # Set SQL Database SKU
+            # Set SQL Database capacity
             az sql db update \
               --name ${{ secrets.SQL_DATABASE_NAME }} \
               --resource-group ${{ secrets.RESOURCE_GROUP_NAME }} \

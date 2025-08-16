@@ -12,7 +12,7 @@ This repository includes a GitHub Actions workflow `.github/workflows/scale.yml`
 ### Triggers
 
 - `workflow_dispatch` — manual trigger with an optional `scale` input (`idle` or `event`).
-- `schedule` — cron schedule configured to run weekly (the example triggers Monday at midnight) to scale back to `idle`.
+- `schedule` — cron schedule configured to run weekly (triggers Monday at midnight) to scale back to `idle`.
 
 ### Inputs
 
@@ -25,7 +25,6 @@ This repository includes a GitHub Actions workflow `.github/workflows/scale.yml`
 
 ### Steps summary
 
-- Checkout repository.
 - Authenticate to Azure using the `Azure/login` action and the repo secrets.
 - Set environment values for `idle` and `event` modes and write them to the GitHub Actions environment.
 - Use the Azure CLI action to update the App Service Plan SKU and SQL Database capacity using the prepared values.

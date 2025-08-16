@@ -36,14 +36,6 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Scale production
-        run: |
-          if [ "${{ github.event.inputs.scale }}" == "event" ]; then
-            echo "Scaling up production environment..."
-          else
-            echo "Scaling down production environment..."
-          fi
-
       - name: set values (idle)
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.scale == 'idle' ) || github.event_name == 'schedule'
         run: |

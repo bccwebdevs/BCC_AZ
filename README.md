@@ -56,6 +56,6 @@ Environment name: `prod`
 1. In GitHub, go to the Actions tab and select the `scale production` workflow.
 2. Click "Run workflow" and choose `idle` or `event` for the `scale` input.
 
-Security
+### Security
 
-- Keep secrets scoped to the repository or organization and rotate service principal credentials regularly.
+- Uses Workload Identity Federation (OIDC) to eliminate the need for long-lived credentials.

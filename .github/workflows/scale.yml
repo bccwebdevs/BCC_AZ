@@ -24,6 +24,11 @@ jobs:
   scale:
     runs-on: ubuntu-latest
     environment: prod
+    env:
+      DB_CAPACITY_IDLE: 10
+      DB_CAPACITY_EVENT: 50
+      APP_SVC_PLAN_SKU_IDLE: B1
+      APP_SVC_PLAN_SKU_EVENT: P1v3
     steps:
       - name: Checkout repository
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -46,14 +51,14 @@ jobs:
       - name: set values (idle)
         if: (github.event_name == 'workflow_dispatch' && github.event.inputs.scale == 'idle' ) || github.event_name == 'schedule'
         run: |
-          echo "APP_SVC_PLAN_SKU=B1" >> $GITHUB_ENV
-          echo "DB_CAPACITY=10" >> $GITHUB_ENV
+          echo "APP_SVC_PLAN_SKU=${{ env.APP_SVC_PLAN_SKU_IDLE }}" >> $GITHUB_ENV
+          echo "DB_CAPACITY=${{ env.DB_CAPACITY_IDLE }}" >> $GITHUB_ENV
 
       - name: set values (event)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.scale == 'event'
         run: |
-          echo "APP_SVC_PLAN_SKU=P1v3" >> $GITHUB_ENV
-          echo "DB_CAPACITY=50" >> $GITHUB_ENV
+          echo "APP_SVC_PLAN_SKU=${{ env.APP_SVC_PLAN_SKU_EVENT }}" >> $GITHUB_ENV
+          echo "DB_CAPACITY=${{ env.DB_CAPACITY_EVENT }}" >> $GITHUB_ENV
 
       - name: scale
         uses: azure/cli@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0

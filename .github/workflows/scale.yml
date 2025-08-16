@@ -56,7 +56,7 @@ jobs:
           echo "DB_CAPACITY=50" >> $GITHUB_ENV
 
       - name: scale
-        uses: azure/cli@v2
+        uses: azure/cli@089eac9d8cc39f5d003e94f8b65efc51076c9cbd # v2.1.0
         if: env.APP_SVC_PLAN_SKU && env.DB_CAPACITY
         with:
           azcliversion: latest

@@ -5,7 +5,7 @@ on:
     inputs:
       scale:
         description: 'Scale type (idle or event)'
-        required: false
+        required: true
         default: 'idle'
         type: choice
         options:
